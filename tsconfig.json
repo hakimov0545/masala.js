@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
-		"target": "es5",
-		"lib": ["es2017", "dom"],
+		"target": "es2019",
+		"lib": ["es2019", "dom"],
 		"module": "System",
 		"declaration": false,
 		"outFile": "./dist/index.js",

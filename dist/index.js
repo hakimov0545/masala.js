@@ -164,7 +164,10 @@ System.register("questions", [], function (exports_2, context_2) {
                     answers: [3, 21, 233, 1597],
                 },
                 12: {
-                    text: "Siz o'z orzuingizdagi ishni qo'lga kiritdingiz. Sizga geometrik progressiya shaklida o'suvchi oylik vada qilishdi, \n    ya'ni sizning birinchi oyligingiz 'firstMonth' va keyingi oladigon oyligingiz avvalgisiga nisbatan 'multiplier' martaga ko'proq bo'ladi.\n    Shunday funksiya tuzingki u firstMonth (birinchi oyligingiz) va multiplier (koeffitsient) qabul qilsin, siz oyligingiz barchasini \n    jamg'arib borsangiz 1,000,000 dan ortiq jamg'armaga necha oyda ega bo'lshingizni qaytarib bersin.",
+                    text: `Siz o'z orzuingizdagi ishni qo'lga kiritdingiz. Sizga geometrik progressiya shaklida o'suvchi oylik vada qilishdi, 
+    ya'ni sizning birinchi oyligingiz 'firstMonth' va keyingi oladigon oyligingiz avvalgisiga nisbatan 'multiplier' martaga ko'proq bo'ladi.
+    Shunday funksiya tuzingki u firstMonth (birinchi oyligingiz) va multiplier (koeffitsient) qabul qilsin, siz oyligingiz barchasini 
+    jamg'arib borsangiz 1,000,000 dan ortiq jamg'armaga necha oyda ega bo'lshingizni qaytarib bersin.`,
                     examples: [
                         "millionInMonth(10, 2) ➞ 17",
                         "millionInMonth(100, 1.01) ➞ 464",
@@ -176,7 +179,7 @@ System.register("questions", [], function (exports_2, context_2) {
                     answers: [17, 464, 4],
                 },
                 13: {
-                    text: "Kiritlgan sonni raqamlar sonini hisoblovchi funksiya tuzing.",
+                    text: `Kiritlgan sonni raqamlar sonini hisoblovchi funksiya tuzing.`,
                     examples: [
                         "countDigit(158) ➞ 3",
                         "countDigit(89) ➞ 2",
@@ -188,7 +191,7 @@ System.register("questions", [], function (exports_2, context_2) {
                     answers: [3, 2, 6, 4],
                 },
                 14: {
-                    text: "Sonning raqamlar yig'indisi juft bo'lsa 'even' so'zini qaytaruvchi, toq bo'lsa 'odd' so'zini qaytaruvchi funksiya tuzing.",
+                    text: `Sonning raqamlar yig'indisi juft bo'lsa 'even' so'zini qaytaruvchi, toq bo'lsa 'odd' so'zini qaytaruvchi funksiya tuzing.`,
                     examples: [
                         "digitSumOddEven(43) ➞ odd",
                         "millionInMonth(123) ➞ even",
@@ -200,7 +203,7 @@ System.register("questions", [], function (exports_2, context_2) {
                     answers: ["odd", "even", "even", "odd"],
                 },
                 15: {
-                    text: "Butun son berilgan, keyingi tub sonni qaytaruvchi funksiya yarating. Agar raqam tub bo'lsa, raqamning o'zini qaytaring.",
+                    text: `Butun son berilgan, keyingi tub sonni qaytaruvchi funksiya yarating. Agar raqam tub bo'lsa, raqamning o'zini qaytaring.`,
                     examples: [
                         "nextPrime(450) ➞ 457",
                         "nextPrime(1000) ➞ 1009",
@@ -310,9 +313,9 @@ System.register("questions", [], function (exports_2, context_2) {
                 1: {
                     text: "Berilgan ism va familiyani bitta stringga birlashtiruvchi funksiya tuzing.",
                     examples: [
-                        "concatName(\"First\", \"Last\") \u279E \"Last, First\"",
-                        "concatName(\"John\", \"Doe\") \u279E \"Doe, John\"",
-                        "concatName(\"Mary\", \"Jane\") \u279E \"Jane, Mary\"",
+                        `concatName("First", "Last") ➞ "Last, First"`,
+                        `concatName("John", "Doe") ➞ "Doe, John"`,
+                        `concatName("Mary", "Jane") ➞ "Jane, Mary"`,
                     ],
                     fun_name: "concatName (firstname, lastname)",
                     solved: false,
@@ -412,26 +415,16 @@ System.register("questionSet", ["const", "questions"], function (exports_3, cont
 });
 System.register("index", ["questionSet"], function (exports_4, context_4) {
     "use strict";
-    var questionSet_1, Questions, Question, renderSets, showTasks, renderTasks, showTask, topshirish;
+    var questionSet_1, Questions, Question, renderSets, showTasks, renderTasks, showTask, res, topshirish;
     var __moduleName = context_4 && context_4.id;
     function testFunction(userFunction, testCases, expectedResults) {
-        // Create the function from the user's code
-        var func = new Function(userFunction +
-            "; return " +
-            userFunction.split(" ")[1].split("(")[0]);
-        // Iterate through each test case and verify the result
-        for (var i = 0; i < testCases.length; i++) {
-            var testCase = testCases[i];
-            var expectedResult = expectedResults[i];
-            // Call the function with the test case
-            var result = func.apply(null, testCase);
-            // Check the result
-            if (result !== expectedResult) {
-                console.log("Test case ".concat(i + 1, " failed: func(").concat(testCase, ") = ").concat(result, ", expected ").concat(expectedResult));
+        for (let i = 0; i < testCases.length; i++) {
+            const result = userFunction.apply(null, testCases[i]);
+            if (result !== expectedResults[i]) {
+                console.log(`Test case ${i + 1} failed: func(${testCases[i]}) = ${result}, expected ${expectedResults[i]}`);
                 return false;
             }
         }
-        // Return true if all test cases pass
         return true;
     }
     return {
@@ -441,25 +434,51 @@ System.register("index", ["questionSet"], function (exports_4, context_4) {
             }
         ],
         execute: function () {
-            renderSets = function () {
+            renderSets = () => {
                 console.log(123);
-                var closeSect = document.querySelector("#task");
-                var closeSect2 = document.querySelector("#tasks");
-                var openSect = document.querySelector("#main");
+                const closeSect = document.querySelector("#task");
+                const closeSect2 = document.querySelector("#tasks");
+                const openSect = document.querySelector("#main");
                 if (closeSect && closeSect2 && openSect) {
                     console.log("sections");
                     closeSect.classList.add("d-none");
                     closeSect2.classList.add("d-none");
                     openSect.classList.remove("d-none");
                 }
-                var row = document.querySelector("#setRow");
+                const row = document.querySelector("#setRow");
                 if (row) {
                     row.innerHTML = "";
-                    Object.values(questionSet_1.questionSet).map(function (q) {
-                        var mainDiv = document.createElement("div");
+                    Object.values(questionSet_1.questionSet).map((q) => {
+                        const mainDiv = document.createElement("div");
                         mainDiv.className =
                             "col-lg-3 col-md-4 col-sm-6 pt-2 pb-2";
-                        mainDiv.innerHTML = "\n        <div class=\"main-cols\">\n          <h3 class=\"\">".concat(q.title, "</h3>\n          <div\n            class=\"d-flex justify-content-between align-items-center\"\n          >\n            <p>\n              ").concat(q.questionsNumber, "\n              <i\n                class=\"fas fa-hourglass-half\"\n              ></i>\n            </p>\n            <div\n              class=\"d-flex justify-content-center align-items-center progress-container\"\n              style=\"\n                width: 80px;\n                height: 80px;\n                border-radius: 50%;\n                box-shadow: 0 0px 3px 3px\n                  rgba(20, 20, 20, 0.31);\n              \"\n            >\n              <p class=\"fs-5\">0%</p>\n            </div>\n          </div>\n        </div>\n      ");
+                        mainDiv.innerHTML = `
+        <div class="main-cols">
+          <h3 class="">${q.title}</h3>
+          <div
+            class="d-flex justify-content-between align-items-center"
+          >
+            <p>
+              ${q.questionsNumber}
+              <i
+                class="fas fa-hourglass-half"
+              ></i>
+            </p>
+            <div
+              class="d-flex justify-content-center align-items-center progress-container"
+              style="
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                box-shadow: 0 0px 3px 3px
+                  rgba(20, 20, 20, 0.31);
+              "
+            >
+              <p class="fs-5">0%</p>
+            </div>
+          </div>
+        </div>
+      `;
                         mainDiv.onclick = function (ev) {
                             renderTasks(ev, q.questions);
                         };
@@ -467,66 +486,73 @@ System.register("index", ["questionSet"], function (exports_4, context_4) {
                     });
                 }
             };
-            showTasks = function (e) {
+            showTasks = (e) => {
                 e.preventDefault();
-                var closeSect = document.querySelector("#task");
-                var openSect = document.querySelector("#tasks");
+                const closeSect = document.querySelector("#task");
+                const openSect = document.querySelector("#tasks");
                 if (closeSect && openSect) {
                     closeSect.classList.add("d-none");
                     openSect.classList.remove("d-none");
                 }
             };
-            renderTasks = function (e, questions) {
+            renderTasks = (e, questions) => {
                 e.preventDefault();
                 Questions = questions;
-                var closeSect = document.querySelector("#main");
-                var openSect = document.querySelector("#tasks");
-                var closeSect2 = document.querySelector("#task");
+                const closeSect = document.querySelector("#main");
+                const openSect = document.querySelector("#tasks");
+                const closeSect2 = document.querySelector("#task");
                 if (closeSect && openSect && closeSect2) {
                     closeSect.classList.add("d-none");
                     closeSect2.classList.add("d-none");
                     openSect.classList.remove("d-none");
-                    var row_1 = document.querySelector("#tasksRow");
-                    if (row_1) {
-                        row_1.innerHTML = "";
-                        Object.values(questions).map(function (q) {
-                            var div = document.createElement("div");
+                    const row = document.querySelector("#tasksRow");
+                    if (row) {
+                        row.innerHTML = "";
+                        Object.values(questions).map((q) => {
+                            const div = document.createElement("div");
                             div.className =
                                 "col-lg-3 col-md-4 col-sm-6 pt-2 pb-2";
-                            div.innerHTML = "\n          <div class=\"main-cols\">\n            <h3 class=\"\">".concat(q.fun_name.split(/\s+/)[0], "</h3>\n          </div>\n        ");
+                            div.innerHTML = `
+          <div class="main-cols">
+            <h3 class="">${q.fun_name.split(/\s+/)[0]}</h3>
+          </div>
+        `;
                             div.onclick = function (ev) {
                                 showTask(ev, q);
                             };
-                            row_1.appendChild(div);
+                            row.appendChild(div);
                         });
                     }
                 }
             };
-            showTask = function (e, question) {
+            showTask = (e, question) => {
                 e.preventDefault();
                 Question = question;
-                var closeSect = document.querySelector("#tasks");
-                var openSect = document.querySelector("#task");
+                const result = document.querySelector("#result");
+                if (result)
+                    result.innerHTML = "";
+                const closeSect = document.querySelector("#tasks");
+                const openSect = document.querySelector("#task");
                 if (closeSect && openSect) {
-                    var home = document.querySelector("#home");
-                    var toTask = document.querySelector("#toTasks");
-                    var oldingisi = document.querySelector("#oldingisi");
-                    var keyingisi = document.querySelector("#keyingisi");
-                    var taskName = document.querySelector("#taskName");
-                    var taskDesc = document.querySelector("#taskDesc");
-                    var taskUl = document.querySelector("#taskUl");
-                    var textArea = document.querySelector("#textArea");
-                    var topshirishBtn = document.querySelector("#topshirish");
+                    const home = document.querySelector("#home");
+                    const toTask = document.querySelector("#toTasks");
+                    const oldingisi = document.querySelector("#oldingisi");
+                    const keyingisi = document.querySelector("#keyingisi");
+                    const taskName = document.querySelector("#taskName");
+                    const taskDesc = document.querySelector("#taskDesc");
+                    const taskUl = document.querySelector("#taskUl");
+                    const textArea = document.querySelector("#textArea");
+                    const topshirishBtn = document.querySelector("#topshirish");
                     console.log({
-                        home: home,
-                        toTask: toTask,
-                        oldingisi: oldingisi,
-                        keyingisi: keyingisi,
-                        taskName: taskName,
-                        taskDesc: taskDesc,
-                        taskUl: taskUl,
-                        textArea: textArea,
-                        topshirishBtn: topshirishBtn,
+                        home,
+                        toTask,
+                        oldingisi,
+                        keyingisi,
+                        taskName,
+                        taskDesc,
+                        taskUl,
+                        textArea,
+                        topshirishBtn,
                     });
                     if (home &&
                         toTask &&
@@ -547,71 +573,130 @@ System.register("index", ["questionSet"], function (exports_4, context_4) {
                             topshirish(ev);
                         };
                         oldingisi.onclick = function (ev) {
-                            var currentTaskNumber;
-                            for (var _i = 0, _a = Object.entries(Questions); _i < _a.length; _i++) {
-                                var _b = _a[_i], key = _b[0], value = _b[1];
+                            let currentTaskNumber;
+                            for (const [key, value] of Object.entries(Questions)) {
                                 if (value.text === question.text) {
                                     currentTaskNumber = Number(key);
                                     break;
                                 }
                             }
                             // @ts-ignore
-                            var oldingiTask = Questions[currentTaskNumber - 1];
-                            console.log({ oldingiTask: oldingiTask });
+                            const oldingiTask = Questions[currentTaskNumber - 1];
+                            console.log({ oldingiTask });
                             showTask(ev, oldingiTask || question);
                         };
                         keyingisi.onclick = function (ev) {
-                            var currentTaskNumber;
-                            for (var _i = 0, _a = Object.entries(Questions); _i < _a.length; _i++) {
-                                var _b = _a[_i], key = _b[0], value = _b[1];
+                            let currentTaskNumber;
+                            for (const [key, value] of Object.entries(Questions)) {
                                 if (value.text === question.text) {
                                     currentTaskNumber = Number(key);
                                     break;
                                 }
                             }
                             // @ts-ignore
-                            var keyingiTask = Questions[currentTaskNumber + 1];
-                            console.log({ keyingiTask: keyingiTask });
+                            const keyingiTask = Questions[currentTaskNumber + 1];
+                            console.log({ keyingiTask });
                             showTask(ev, keyingiTask || question);
                         };
                         taskName.innerHTML = question.fun_name.split(/\s+/)[0];
                         taskDesc.innerHTML = question.text;
-                        taskUl.innerHTML = "\n        <li>".concat(question.examples[0], "</li>\n        <li>").concat(question.examples[1], "</li>\n        <li>").concat(question.examples[2], "</li>\n      ");
-                        textArea.value = "\n        function ".concat(question.fun_name, " {\n          \n        }\n      ");
+                        taskUl.innerHTML = `
+        <li>${question.examples[0]}</li>
+        <li>${question.examples[1]}</li>
+        <li>${question.examples[2]}</li>
+      `;
+                        textArea.value = `
+        function ${question.fun_name} {
+          
+        }
+      `;
                         closeSect.classList.add("d-none");
                         openSect.classList.remove("d-none");
                     }
                 }
             };
-            topshirish = function (e) {
+            res = [0, 0, 0];
+            topshirish = (e) => {
                 e.preventDefault();
-                var textArea = document.querySelector("#textArea");
-                var resultText = document.querySelector("#result");
+                const textArea = document.querySelector("#textArea");
+                const resultText = document.querySelector("#result");
                 if (textArea && resultText) {
-                    var functionText = textArea.value;
+                    const functionText = textArea.value;
                     try {
-                        var userFunction = functionText;
-                        var testCases = Question.check.map(function (item) {
-                            return JSON.parse(item);
-                        });
-                        var expectedResults = Question.answers;
-                        var isCorrect = testFunction(userFunction, testCases, expectedResults);
+                        const userFunction = new Function("a", "b", functionText);
+                        // Parse the test cases assuming they are stored as JSON strings or comma-separated values
+                        let testCases = Question.check
+                            .map((item) => {
+                            try {
+                                if (item.startsWith("[")) {
+                                    return JSON.parse(item);
+                                }
+                                else {
+                                    return item.split(",").map(Number);
+                                }
+                            }
+                            catch (e) {
+                                console.error(`Error parsing test case: ${item}`, e);
+                                return null; // Handle the error or skip invalid test cases
+                            }
+                        })
+                            .filter((item) => item !== null); // Filter out any null (invalid) entries
+                        const expectedResults = Question.answers.flat();
+                        const isCorrect = testFunction(userFunction, testCases, expectedResults);
                         if (isCorrect) {
                             console.log("All test cases passed.");
-                            resultText.innerHTML = "All test cases passed.";
+                            resultText.innerHTML = `
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+								${expectedResults[0]}
+								<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[0]}</button>
+							</p>
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+							${expectedResults[1]}
+								<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[1]}</button>
+							</p>
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+							${expectedResults[2]}
+								<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[2]}</button>
+							</p>
+						`;
                         }
                         else {
                             console.log("Some test cases failed.");
-                            resultText.innerHTML = "Some test cases failed.";
+                            resultText.innerHTML = `
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+								${expectedResults[0]}
+								<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[0]}</button>
+							</p>
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+							${expectedResults[1]}
+								<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[1]}</button>
+							</p>
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+							${expectedResults[2]}
+								<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[2]}</button>
+							</p>
+						`;
                         }
                     }
                     catch (error) {
                         console.log(error);
-                        resultText.innerHTML = "Error: ".concat(error);
+                        resultText.innerHTML = `Error: ${error}`;
                     }
                 }
             };
-            window.onload = function () {
+            window.onload = () => {
                 renderSets();
             };
         }

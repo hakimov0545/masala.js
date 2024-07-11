@@ -140,6 +140,10 @@ const showTask = (e: Event, question: TaskI) => {
 
 	Question = question;
 
+	const result = document.querySelector("#result");
+
+	if (result) result.innerHTML = "";
+
 	const closeSect = document.querySelector<HTMLElement>("#tasks");
 	const openSect = document.querySelector<HTMLElement>("#task");
 
@@ -254,38 +258,26 @@ const showTask = (e: Event, question: TaskI) => {
 	}
 };
 
+let res: number[] = [0, 0, 0];
+
 function testFunction(
-	userFunction: string,
+	userFunction: Function,
 	testCases: any[][],
 	expectedResults: any[]
 ): boolean {
-	// Create the function from the user's code
-	const func = new Function(
-		userFunction +
-			"; return " +
-			userFunction.split(" ")[1].split("(")[0]
-	);
-
-	// Iterate through each test case and verify the result
 	for (let i = 0; i < testCases.length; i++) {
-		const testCase = testCases[i];
-		const expectedResult = expectedResults[i];
+		const result = userFunction.apply(null, testCases[i]);
 
-		// Call the function with the test case
-		const result = func.apply(null, testCase);
-
-		// Check the result
-		if (result !== expectedResult) {
+		if (result !== expectedResults[i]) {
 			console.log(
-				`Test case ${
-					i + 1
-				} failed: func(${testCase}) = ${result}, expected ${expectedResult}`
+				`Test case ${i + 1} failed: func(${
+					testCases[i]
+				}) = ${result}, expected ${expectedResults[i]}`
 			);
 			return false;
 		}
 	}
 
-	// Return true if all test cases pass
 	return true;
 }
 
@@ -300,12 +292,28 @@ const topshirish = (e: Event) => {
 		const functionText = textArea.value;
 
 		try {
-			const userFunction = functionText;
+			const userFunction = new Function("a", "b", functionText);
 
-			let testCases: any[][] = Question.check.map((item) =>
-				JSON.parse(item)
-			);
-			const expectedResults: any[] = Question.answers;
+			// Parse the test cases assuming they are stored as JSON strings or comma-separated values
+			let testCases: any[][] = Question.check
+				.map((item) => {
+					try {
+						if (item.startsWith("[")) {
+							return JSON.parse(item);
+						} else {
+							return item.split(",").map(Number);
+						}
+					} catch (e) {
+						console.error(
+							`Error parsing test case: ${item}`,
+							e
+						);
+						return null; // Handle the error or skip invalid test cases
+					}
+				})
+				.filter((item) => item !== null); // Filter out any null (invalid) entries
+
+			const expectedResults: any[] = Question.answers.flat();
 
 			const isCorrect = testFunction(
 				userFunction,
@@ -315,10 +323,48 @@ const topshirish = (e: Event) => {
 
 			if (isCorrect) {
 				console.log("All test cases passed.");
-				resultText.innerHTML = "All test cases passed.";
+				resultText.innerHTML = `
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+								${expectedResults[0]}
+								<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[0]}</button>
+							</p>
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+							${expectedResults[1]}
+								<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[1]}</button>
+							</p>
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+							${expectedResults[2]}
+								<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[2]}</button>
+							</p>
+						`;
 			} else {
 				console.log("Some test cases failed.");
-				resultText.innerHTML = "Some test cases failed.";
+				resultText.innerHTML = `
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+								${expectedResults[0]}
+								<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[0]}</button>
+							</p>
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+							${expectedResults[1]}
+								<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[1]}</button>
+							</p>
+							<p
+								class="d-flex justify-content-between align-items-center flex-wrap"
+							>
+							${expectedResults[2]}
+								<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[2]}</button>
+							</p>
+						`;
 			}
 		} catch (error) {
 			console.log(error);
