@@ -24,15 +24,11 @@ let Questions: questionsI;
 let Question: TaskI;
 
 const renderSets = () => {
-	console.log(123);
-
 	const closeSect = document.querySelector<HTMLElement>("#task");
 	const closeSect2 = document.querySelector<HTMLElement>("#tasks");
 	const openSect = document.querySelector<HTMLElement>("#main");
 
 	if (closeSect && closeSect2 && openSect) {
-		console.log("sections");
-
 		closeSect.classList.add("d-none");
 		closeSect2.classList.add("d-none");
 		openSect.classList.remove("d-none");
@@ -48,32 +44,16 @@ const renderSets = () => {
 			mainDiv.className =
 				"col-lg-3 col-md-4 col-sm-6 pt-2 pb-2";
 			mainDiv.innerHTML = `
-        <div class="main-cols">
-          <h3 class="">${q.title}</h3>
-          <div
-            class="d-flex justify-content-between align-items-center"
-          >
-            <p>
-              ${q.questionsNumber}
-              <i
-                class="fas fa-hourglass-half"
-              ></i>
-            </p>
-            <div
-              class="d-flex justify-content-center align-items-center progress-container"
-              style="
-                width: 80px;
-                height: 80px;
-                border-radius: 50%;
-                box-shadow: 0 0px 3px 3px
-                  rgba(20, 20, 20, 0.31);
-              "
-            >
-              <p class="fs-5">0%</p>
-            </div>
-          </div>
-        </div>
-      `;
+				<div class="main-cols">
+					<h3 class="">${q.title}</h3>
+					<div class="d-flex justify-content-between align-items-center">
+						<p>${q.questionsNumber} <i class="fas fa-hourglass-half"></i></p>
+						<div class="d-flex justify-content-center align-items-center progress-container" style="width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 0px 3px 3px rgba(20, 20, 20, 0.31);">
+							<p class="fs-5">0%</p>
+						</div>
+					</div>
+				</div>
+			`;
 
 			mainDiv.onclick = function (ev: MouseEvent) {
 				renderTasks(ev, q.questions);
@@ -120,10 +100,10 @@ const renderTasks = (e: Event, questions: questionsI) => {
 					"col-lg-3 col-md-4 col-sm-6 pt-2 pb-2";
 
 				div.innerHTML = `
-          <div class="main-cols">
-            <h3 class="">${q.fun_name.split(/\s+/)[0]}</h3>
-          </div>
-        `;
+					<div class="main-cols">
+						<h3 class="">${q.fun_name.split(/\s+/)[0]}</h3>
+					</div>
+				`;
 
 				div.onclick = function (ev: MouseEvent) {
 					showTask(ev, q);
@@ -164,18 +144,6 @@ const showTask = (e: Event, question: TaskI) => {
 		const topshirishBtn: HTMLButtonElement | null =
 			document.querySelector("#topshirish");
 
-		console.log({
-			home,
-			toTask,
-			oldingisi,
-			keyingisi,
-			taskName,
-			taskDesc,
-			taskUl,
-			textArea,
-			topshirishBtn,
-		});
-
 		if (
 			home &&
 			toTask &&
@@ -212,9 +180,8 @@ const showTask = (e: Event, question: TaskI) => {
 				}
 
 				// @ts-ignore
-				const oldingiTask = Questions[currentTaskNumber - 1];
 
-				console.log({ oldingiTask });
+				const oldingiTask = Questions[currentTaskNumber - 1];
 
 				showTask(ev, oldingiTask || question);
 			};
@@ -231,9 +198,8 @@ const showTask = (e: Event, question: TaskI) => {
 				}
 
 				// @ts-ignore
-				const keyingiTask = Questions[currentTaskNumber + 1];
 
-				console.log({ keyingiTask });
+				const keyingiTask = Questions[currentTaskNumber + 1];
 
 				showTask(ev, keyingiTask || question);
 			};
@@ -241,16 +207,16 @@ const showTask = (e: Event, question: TaskI) => {
 			taskName.innerHTML = question.fun_name.split(/\s+/)[0];
 			taskDesc.innerHTML = question.text;
 			taskUl.innerHTML = `
-        <li>${question.examples[0]}</li>
-        <li>${question.examples[1]}</li>
-        <li>${question.examples[2]}</li>
-      `;
+				<li>${question.examples[0]}</li>
+				<li>${question.examples[1]}</li>
+				<li>${question.examples[2]}</li>
+			`;
 
 			textArea.value = `
-        function ${question.fun_name} {
-          
-        }
-      `;
+	function ${question.fun_name} {
+			
+	}
+			`;
 
 			closeSect.classList.add("d-none");
 			openSect.classList.remove("d-none");
@@ -267,6 +233,10 @@ function testFunction(
 ): boolean {
 	for (let i = 0; i < testCases.length; i++) {
 		const result = userFunction.apply(null, testCases[i]);
+
+		res[i] = result;
+
+		console.log({ result });
 
 		if (result !== expectedResults[i]) {
 			console.log(
@@ -292,29 +262,21 @@ const topshirish = (e: Event) => {
 		const functionText = textArea.value;
 
 		try {
-			const userFunction = new Function("a", "b", functionText);
+			// Foydalanuvchi funksiyasini yaratish
+			const userFunction = eval(`(${functionText})`);
 
-			// Parse the test cases assuming they are stored as JSON strings or comma-separated values
-			let testCases: any[][] = Question.check
-				.map((item) => {
-					try {
-						if (item.startsWith("[")) {
-							return JSON.parse(item);
-						} else {
-							return item.split(",").map(Number);
-						}
-					} catch (e) {
-						console.error(
-							`Error parsing test case: ${item}`,
-							e
-						);
-						return null; // Handle the error or skip invalid test cases
-					}
-				})
-				.filter((item) => item !== null); // Filter out any null (invalid) entries
+			// Test hollari va kutilgan natijalarni olish
+			const testCases: any[][] = Question.check.map((item) => {
+				try {
+					return JSON.parse(item);
+				} catch (e) {
+					return item.split(",").map(Number);
+				}
+			});
 
 			const expectedResults: any[] = Question.answers.flat();
 
+			// Foydalanuvchi funksiyasini test qilish
 			const isCorrect = testFunction(
 				userFunction,
 				testCases,
@@ -322,53 +284,38 @@ const topshirish = (e: Event) => {
 			);
 
 			if (isCorrect) {
-				console.log("All test cases passed.");
 				resultText.innerHTML = `
-							<p
-								class="d-flex justify-content-between align-items-center flex-wrap"
-							>
-								${expectedResults[0]}
-								<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[0]}</button>
-							</p>
-							<p
-								class="d-flex justify-content-between align-items-center flex-wrap"
-							>
+					<p class="d-flex justify-content-between align-items-center flex-wrap">
+							${expectedResults[0]}
+							<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[0]}</button>
+					</p>
+					<p class="d-flex justify-content-between align-items-center flex-wrap">
 							${expectedResults[1]}
-								<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[1]}</button>
-							</p>
-							<p
-								class="d-flex justify-content-between align-items-center flex-wrap"
-							>
+							<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[1]}</button>
+					</p>
+					<p class="d-flex justify-content-between align-items-center flex-wrap">
 							${expectedResults[2]}
-								<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[2]}</button>
-							</p>
-						`;
+							<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[2]}</button>
+					</p>
+				`;
 			} else {
-				console.log("Some test cases failed.");
 				resultText.innerHTML = `
-							<p
-								class="d-flex justify-content-between align-items-center flex-wrap"
-							>
-								${expectedResults[0]}
-								<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[0]}</button>
-							</p>
-							<p
-								class="d-flex justify-content-between align-items-center flex-wrap"
-							>
+					<p class="d-flex justify-content-between align-items-center flex-wrap">
+							${expectedResults[0]}
+							<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[0]}</button>
+					</p>
+					<p class="d-flex justify-content-between align-items-center flex-wrap">
 							${expectedResults[1]}
-								<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[1]}</button>
-							</p>
-							<p
-								class="d-flex justify-content-between align-items-center flex-wrap"
-							>
+							<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[1]}</button>
+					</p>
+					<p class="d-flex justify-content-between align-items-center flex-wrap">
 							${expectedResults[2]}
-								<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[2]}</button>
-							</p>
-						`;
+							<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[2]}</button>
+					</p>
+				`;
 			}
 		} catch (error) {
-			console.log(error);
-			resultText.innerHTML = `Error: ${error}`;
+			resultText.innerHTML = `Xato: ${error}`;
 		}
 	}
 };
