@@ -302,15 +302,27 @@ const topshirish = (e: Event) => {
 				resultText.innerHTML = `
 					<p class="d-flex justify-content-between align-items-center flex-wrap">
 							${expectedResults[0]}
-							<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[0]}</button>
+							<button class="resBtnDanger btn btn-${
+								res[0] == expectedResults[0]
+									? "success"
+									: "danger"
+							}">Javobingiz: ${res[0]}</button>
 					</p>
 					<p class="d-flex justify-content-between align-items-center flex-wrap">
 							${expectedResults[1]}
-							<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[1]}</button>
+							<button class="resBtnDanger btn btn-${
+								res[1] == expectedResults[1]
+									? "success"
+									: "danger"
+							}">Javobingiz: ${res[1]}</button>
 					</p>
 					<p class="d-flex justify-content-between align-items-center flex-wrap">
 							${expectedResults[2]}
-							<button class="resBtnDanger btn btn-danger">Javobingiz: ${res[2]}</button>
+							<button class="resBtnDanger btn btn-${
+								res[2] == expectedResults[2]
+									? "success"
+									: "danger"
+							}">Javobingiz: ${res[2]}</button>
 					</p>
 				`;
 			}
