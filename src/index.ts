@@ -514,6 +514,44 @@ const login = async (event: Event): Promise<void> => {
 
 const signup = async (event: Event) => {
 	event.preventDefault();
+	//@ts-ignore
+	const form = document.forms.signup;
+
+	const email = form.email.value;
+	const username = form.username.value;
+	const pass = form.pass.value;
+
+	await api.post("/users", {
+		username,
+		email,
+		pass,
+		tasks: {},
+	});
+	renderSets();
 };
 
-window.onload = () => {};
+window.onload = () => {
+	const signIn = document.getElementById(
+		"show-sign-in"
+	) as HTMLButtonElement;
+	const signUp = document.getElementById(
+		"show-sign-up"
+	) as HTMLButtonElement;
+
+	if (signIn && signUp) {
+		signIn.onclick = () => {
+			showSignIn();
+		};
+		signUp.onclick = () => {
+			showSignUp();
+		};
+	}
+
+	const signUpBtn = document.querySelector(
+		"#signUpBtn"
+	) as HTMLButtonElement;
+
+	signUpBtn.onclick = (e: Event) => {
+		signup(e);
+	};
+};

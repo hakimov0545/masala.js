@@ -125,6 +125,10 @@
 				border-radius: 15px;
 			}
 
+			.card .btn {
+				border-color: #fff;
+			}
+
 			#comments {
 				background-color: #303041;
 				border-color: #fff;
@@ -157,7 +161,6 @@
 									type="button"
 									class="btn btn-outline-primary active"
 									id="show-sign-in"
-									onclick="showSignIn()"
 								>
 									Sign In
 								</button>
@@ -165,7 +168,6 @@
 									type="button"
 									class="btn btn-outline-primary"
 									id="show-sign-up"
-									onclick="showSignUp()"
 								>
 									Sign Up
 								</button>
@@ -221,30 +223,15 @@
 						class="col-md-6 col-12 d-flex align-items-center d-none"
 						id="sign-up-div"
 					>
-						<form
-							class="w-100 text-center"
-							onsubmit="signup(event)"
-						>
+						<form name="signup" class="w-100 text-center">
 							<i class="fa-solid fa-user-circle"></i>
 							<h2 class="text-primary">Registration</h2>
 							<div class="mb-3 w-100">
-								<label
-									for="name-sign"
-									class="form-label"
-									>Name</label
-								>
-								<input
-									type="text"
-									class="form-control w-60 text-center"
-									id="name-sign"
-									placeholder="Enter your name"
-								/>
-							</div>
-							<div class="mb-3 w-100">
 								<label for="email" class="form-label"
-									>Lats name</label
+									>Email</label
 								>
 								<input
+									name="email"
 									type="text"
 									class="form-control w-60 text-center"
 									id="email"
@@ -258,6 +245,7 @@
 									>Username</label
 								>
 								<input
+									name="username"
 									type="text"
 									class="form-control w-60 text-center"
 									id="username-sign"
@@ -271,6 +259,7 @@
 									>Password</label
 								>
 								<input
+									name="pass"
 									type="password"
 									class="form-control w-60 text-center"
 									id="password-sign"
@@ -278,21 +267,12 @@
 								/>
 							</div>
 							<button
+								id="signUpBtn"
 								type="submit"
 								class="btn btn-primary ps-5 pe-5 mt-2"
-								onclick="signup(event)"
 							>
 								Sign Up
 							</button>
-							<p class="mt-3">
-								Have an account?
-								<a
-									class="text-dark"
-									onclick="showSignIn()"
-								>
-									Log In
-								</a>
-							</p>
 						</form>
 					</div>
 				</div>

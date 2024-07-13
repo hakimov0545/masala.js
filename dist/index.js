@@ -371,8 +371,35 @@ System.register("index", ["api"], function (exports_1, context_1) {
             };
             signup = async (event) => {
                 event.preventDefault();
+                //@ts-ignore
+                const form = document.forms.signup;
+                const email = form.email.value;
+                const username = form.username.value;
+                const pass = form.pass.value;
+                await api_1.api.post("/users", {
+                    username,
+                    email,
+                    pass,
+                    tasks: {},
+                });
+                renderSets();
             };
-            window.onload = () => { };
+            window.onload = () => {
+                const signIn = document.getElementById("show-sign-in");
+                const signUp = document.getElementById("show-sign-up");
+                if (signIn && signUp) {
+                    signIn.onclick = () => {
+                        showSignIn();
+                    };
+                    signUp.onclick = () => {
+                        showSignUp();
+                    };
+                }
+                const signUpBtn = document.querySelector("#signUpBtn");
+                signUpBtn.onclick = (e) => {
+                    signup(e);
+                };
+            };
         }
     };
 });
