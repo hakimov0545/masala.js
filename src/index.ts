@@ -1,13 +1,18 @@
-import { questionSet } from "./questionSet";
+import { api, getQuestionSet, getQuestions } from "./api";
 
-interface questionSetI {
+let questionSet: questionSetI[];
+
+let currentSet: questionSetI;
+
+export interface questionSetI {
 	id: number;
 	title: string;
-	questionsNumber: number;
-	questions: {};
+	questions: string;
 }
 
-interface TaskI {
+export interface TaskI {
+	id: number;
+	setId: number;
 	text: string;
 	examples: string[];
 	fun_name: string;
@@ -16,38 +21,99 @@ interface TaskI {
 	answers: any[][];
 }
 
-interface questionsI {
-	[key: number]: TaskI;
+export type questionsI = TaskI[];
+
+export interface userI {
+	id: number;
+	username: string;
+	email: string;
+	pass: string;
+	tasks: {
+		[key: string]: boolean;
+	};
+}
+
+interface commentI {
+	id: number;
+	text: string;
+	userId: number;
+	questionId: number;
 }
 
 let Questions: questionsI;
 let Question: TaskI;
+let user: userI;
 
-const renderSets = () => {
-	const closeSect = document.querySelector<HTMLElement>("#task");
-	const closeSect2 = document.querySelector<HTMLElement>("#tasks");
-	const openSect = document.querySelector<HTMLElement>("#main");
+const buttonAddon2: HTMLButtonElement | null =
+	document.querySelector("#button-addon2");
 
-	if (closeSect && closeSect2 && openSect) {
-		closeSect.classList.add("d-none");
-		closeSect2.classList.add("d-none");
-		openSect.classList.remove("d-none");
+if (buttonAddon2)
+	buttonAddon2.onclick = (e: Event) => {
+		addComment(e);
+	};
+
+const addComment = async (e: Event) => {
+	e.preventDefault();
+	const inp: HTMLInputElement | null =
+		document.querySelector("#newComment");
+
+	if (inp) {
+		const text = inp.value;
+		//@ts-ignore
+		await axios.post(
+			"https://d073cd501036ffc1.mokky.dev/comments",
+			{
+				text: text,
+				userId: user.id,
+				questionId: Question.id,
+			}
+		);
+		renderComments(Question);
+		inp.value = "";
 	}
+};
 
-	const row: HTMLDivElement | null =
-		document.querySelector("#setRow");
-	if (row) {
-		row.innerHTML = "";
+const renderSets = async () => {
+	try {
+		questionSet = await getQuestionSet();
 
-		Object.values(questionSet).map((q: questionSetI) => {
-			const mainDiv = document.createElement("div");
-			mainDiv.className =
-				"col-lg-3 col-md-4 col-sm-6 pt-2 pb-2";
-			mainDiv.innerHTML = `
+		const closeSect =
+			document.querySelector<HTMLElement>("#task");
+		const closeSect2 =
+			document.querySelector<HTMLElement>("#tasks");
+		const closeSect3 =
+			document.querySelector<HTMLElement>("#log-sect");
+		const openSect = document.querySelector<HTMLElement>("#main");
+
+		if (closeSect && closeSect2 && closeSect3 && openSect) {
+			closeSect.classList.add("d-none");
+			closeSect2.classList.add("d-none");
+			closeSect3.classList.add("d-none");
+			openSect.classList.remove("d-none");
+		}
+
+		const row: HTMLDivElement | null =
+			document.querySelector("#setRow");
+		if (row) {
+			row.innerHTML = "";
+
+			console.log({ questionSet });
+
+			const quests = await getQuestions();
+
+			questionSet.map((q: questionSetI) => {
+				const count = quests.filter(
+					(item: TaskI) => item.setId == q.id
+				);
+
+				const mainDiv = document.createElement("div");
+				mainDiv.className =
+					"col-lg-3 col-md-4 col-sm-6 pt-2 pb-2";
+				mainDiv.innerHTML = `
 				<div class="main-cols">
 					<h3 class="">${q.title}</h3>
 					<div class="d-flex justify-content-between align-items-center">
-						<p>${q.questionsNumber} <i class="fas fa-hourglass-half"></i></p>
+						<p>${count.length} <i class="fas fa-hourglass-half"></i></p>
 						<div class="d-flex justify-content-center align-items-center progress-container" style="width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 0px 3px 3px rgba(20, 20, 20, 0.31);">
 							<p class="fs-5">0%</p>
 						</div>
@@ -55,12 +121,17 @@ const renderSets = () => {
 				</div>
 			`;
 
-			mainDiv.onclick = function (ev: MouseEvent) {
-				renderTasks(ev, q.questions);
-			};
+				mainDiv.onclick = function (ev: MouseEvent) {
+					renderTasks(ev, q.id);
+				};
 
-			row.appendChild(mainDiv);
-		});
+				currentSet = q;
+
+				row.appendChild(mainDiv);
+			});
+		}
+	} catch (error) {
+		console.log(error);
 	}
 };
 
@@ -76,10 +147,14 @@ const showTasks = (e: Event) => {
 	}
 };
 
-const renderTasks = (e: Event, questions: questionsI) => {
+const renderTasks = async (e: Event, q: number) => {
 	e.preventDefault();
 
-	Questions = questions;
+	const questions: questionsI = await getQuestions(q);
+
+	console.log({ questions });
+
+	console.log({ Questions });
 
 	const closeSect = document.querySelector<HTMLElement>("#main");
 	const openSect = document.querySelector<HTMLElement>("#tasks");
@@ -99,14 +174,32 @@ const renderTasks = (e: Event, questions: questionsI) => {
 				div.className =
 					"col-lg-3 col-md-4 col-sm-6 pt-2 pb-2";
 
+				console.log({ q });
+
+				const indexOf = q.fun_name.indexOf("(");
+
+				let name;
+
+				if (q.fun_name.charAt(indexOf - 1) == " ") {
+					name = q.fun_name.slice(0, indexOf - 1);
+				} else {
+					name = q.fun_name.slice(0, indexOf);
+				}
+
+				const isSolved = user.tasks.hasOwnProperty(q.id);
+				console.log(q.id);
+
+				console.log(isSolved);
+
 				div.innerHTML = `
-					<div class="main-cols">
-						<h3 class="">${q.fun_name.split(/\s+/)[0]}</h3>
+					<div class="main-cols d-flex justify-content-around align-items-center">
+						<h3 class="">${name.charAt(0).toUpperCase() + name.slice(1)}</h3>
+						${isSolved ? "<i class='fa-solid fa-check'></i>" : ""}
 					</div>
 				`;
 
 				div.onclick = function (ev: MouseEvent) {
-					showTask(ev, q);
+					showTask(q, ev);
 				};
 
 				row.appendChild(div);
@@ -115,8 +208,8 @@ const renderTasks = (e: Event, questions: questionsI) => {
 	}
 };
 
-const showTask = (e: Event, question: TaskI) => {
-	e.preventDefault();
+const showTask = async (question: TaskI, e?: Event) => {
+	if (e) e.preventDefault();
 
 	Question = question;
 
@@ -160,7 +253,7 @@ const showTask = (e: Event, question: TaskI) => {
 			};
 
 			toTask.onclick = function (ev: MouseEvent) {
-				renderTasks(ev, Questions);
+				renderTasks(ev, currentSet.id);
 			};
 
 			topshirishBtn.onclick = function (ev: MouseEvent) {
@@ -183,7 +276,7 @@ const showTask = (e: Event, question: TaskI) => {
 
 				const oldingiTask = Questions[currentTaskNumber - 1];
 
-				showTask(ev, oldingiTask || question);
+				showTask(oldingiTask || question, ev);
 			};
 			keyingisi.onclick = function (ev: MouseEvent) {
 				let currentTaskNumber: number;
@@ -201,7 +294,7 @@ const showTask = (e: Event, question: TaskI) => {
 
 				const keyingiTask = Questions[currentTaskNumber + 1];
 
-				showTask(ev, keyingiTask || question);
+				showTask(keyingiTask || question, ev);
 			};
 
 			taskName.innerHTML = question.fun_name.split(/\s+/)[0];
@@ -218,38 +311,77 @@ const showTask = (e: Event, question: TaskI) => {
 	}
 			`;
 
+			renderComments(question);
+
 			closeSect.classList.add("d-none");
 			openSect.classList.remove("d-none");
 		}
 	}
 };
 
-let res: number[] = [0, 0, 0];
+const renderComments = async (question: TaskI) => {
+	// @ts-ignore
+	const comments = await axios.get(
+		`https://d073cd501036ffc1.mokky.dev/comments?questionId=${question.id}`
+	);
 
-function testFunction(
-	userFunction: Function,
-	testCases: any[][],
-	expectedResults: any[]
-): boolean {
-	for (let i = 0; i < testCases.length; i++) {
-		const result = userFunction.apply(null, testCases[i]);
+	console.log({ comments });
+	console.log({ user });
 
-		res[i] = result;
+	const users = await getUsers();
 
-		console.log({ result });
+	if (comments.data.length && users) {
+		const commentsUl: HTMLUListElement | null =
+			document.querySelector("#comments");
 
-		if (result !== expectedResults[i]) {
-			console.log(
-				`Test case ${i + 1} failed: func(${
-					testCases[i]
-				}) = ${result}, expected ${expectedResults[i]}`
-			);
-			return false;
+		if (commentsUl) {
+			commentsUl.innerHTML = "";
+
+			console.log(comments.data);
+
+			comments.data.map((c: commentI) => {
+				const user: userI = users.find(
+					(u: userI) => u.id == c.userId
+				);
+
+				console.log({ user });
+
+				if (user) {
+					commentsUl.innerHTML += `
+						<li class="list-group-item">
+							<h5 class="text-light me-3">${user.username}: </h5><p class="text-light">${c.text}</p>
+						</li>
+					`;
+				}
+			});
 		}
 	}
+};
 
-	return true;
-}
+// function testFunction(
+// 	userFunction: Function,
+// 	testCases: any[][],
+// 	expectedResults: any[]
+// ): boolean {
+// 	for (let i = 0; i < testCases.length; i++) {
+// 		const result = userFunction.apply(null, testCases[i]);
+
+// 		res[i] = result;
+
+// 		console.log({ result });
+
+// 		if (result !== expectedResults[i]) {
+// 			console.log(
+// 				`Test case ${i + 1} failed: func(${
+// 					testCases[i]
+// 				}) = ${result}, expected ${expectedResults[i]}`
+// 			);
+// 			return false;
+// 		}
+// 	}
+
+// 	return true;
+// }
 
 const topshirish = (e: Event) => {
 	e.preventDefault();
@@ -262,76 +394,126 @@ const topshirish = (e: Event) => {
 		const functionText = textArea.value;
 
 		try {
-			// Foydalanuvchi funksiyasini yaratish
-			const userFunction = eval(`(${functionText})`);
+			const indexOf = Question.fun_name.indexOf("(");
 
-			// Test hollari va kutilgan natijalarni olish
-			const testCases: any[][] = Question.check.map((item) => {
+			let name;
+
+			if (Question.fun_name.charAt(indexOf - 1) == " ") {
+				name = Question.fun_name.slice(0, indexOf - 1);
+			} else {
+				name = Question.fun_name.slice(0, indexOf);
+			}
+
+			resultText.innerHTML = "";
+			Question.check.map((item, index) => {
 				try {
-					return JSON.parse(item);
+					let res;
+					eval(`
+							${functionText}
+						res = ${name}(${item})`);
+
+					const isTrue = res == Question.answers[index];
+					resultText.innerHTML += `
+					<p class="d-flex justify-content-between align-items-center flex-wrap">
+							${Question.answers[index]}
+							<button class="resBtnDanger btn btn-${
+								isTrue ? "success" : "danger"
+							}">Javobingiz: ${res}</button>
+					</p>`;
+
+					if (isTrue) {
+						Question.solved = true;
+						trueAnswer(user, Question.id);
+					} else {
+					}
 				} catch (e) {
+					console.log(e);
 					return item.split(",").map(Number);
 				}
 			});
-
-			const expectedResults: any[] = Question.answers.flat();
-
-			// Foydalanuvchi funksiyasini test qilish
-			const isCorrect = testFunction(
-				userFunction,
-				testCases,
-				expectedResults
-			);
-
-			if (isCorrect) {
-				resultText.innerHTML = `
-					<p class="d-flex justify-content-between align-items-center flex-wrap">
-							${expectedResults[0]}
-							<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[0]}</button>
-					</p>
-					<p class="d-flex justify-content-between align-items-center flex-wrap">
-							${expectedResults[1]}
-							<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[1]}</button>
-					</p>
-					<p class="d-flex justify-content-between align-items-center flex-wrap">
-							${expectedResults[2]}
-							<button class="resBtnSuccess btn btn-success">Javobingiz: ${res[2]}</button>
-					</p>
-				`;
-			} else {
-				resultText.innerHTML = `
-					<p class="d-flex justify-content-between align-items-center flex-wrap">
-							${expectedResults[0]}
-							<button class="resBtnDanger btn btn-${
-								res[0] == expectedResults[0]
-									? "success"
-									: "danger"
-							}">Javobingiz: ${res[0]}</button>
-					</p>
-					<p class="d-flex justify-content-between align-items-center flex-wrap">
-							${expectedResults[1]}
-							<button class="resBtnDanger btn btn-${
-								res[1] == expectedResults[1]
-									? "success"
-									: "danger"
-							}">Javobingiz: ${res[1]}</button>
-					</p>
-					<p class="d-flex justify-content-between align-items-center flex-wrap">
-							${expectedResults[2]}
-							<button class="resBtnDanger btn btn-${
-								res[2] == expectedResults[2]
-									? "success"
-									: "danger"
-							}">Javobingiz: ${res[2]}</button>
-					</p>
-				`;
-			}
 		} catch (error) {
+			console.log(error);
 			resultText.innerHTML = `Xato: ${error}`;
 		}
 	}
 };
 
-window.onload = () => {
-	renderSets();
+const trueAnswer = async (user: userI, n: number) => {
+	await api.patch(`/users/${user.id}`, {
+		tasks: {
+			...user.tasks,
+			[n]: true,
+		},
+	});
 };
+
+const getUsers = async () => {
+	// @ts-ignore
+	const res = await axios.get(
+		"https://d073cd501036ffc1.mokky.dev/users"
+	);
+
+	return res.data;
+};
+
+const loginBtn: HTMLButtonElement | null =
+	document.querySelector("#loginBtn");
+if (loginBtn)
+	loginBtn.onclick = (e: Event) => {
+		login(e);
+	};
+
+const showSignIn = async () => {
+	const signIn = document.getElementById("show-sign-in");
+	if (signIn) signIn.classList.add("active");
+	const signUp = document.getElementById("show-sign-up");
+	if (signUp) signUp.classList.remove("active");
+	const signDiv = document.getElementById("sign-in-div");
+	if (signDiv) signDiv.classList.remove("d-none");
+	const upDIv = document.getElementById("sign-up-div");
+	if (upDIv) upDIv.classList.add("d-none");
+};
+
+const showSignUp = async () => {
+	const signIn = document.getElementById("show-sign-in");
+	if (signIn) signIn.classList.remove("active");
+	const signUp = document.getElementById("show-sign-up");
+	if (signUp) signUp.classList.add("active");
+	const signDiv = document.getElementById("sign-in-div");
+	if (signDiv) signDiv.classList.add("d-none");
+	const upDIv = document.getElementById("sign-up-div");
+	if (upDIv) upDIv.classList.remove("d-none");
+};
+
+const login = async (event: Event): Promise<void> => {
+	event.preventDefault();
+	const users = await getUsers();
+
+	console.log(users);
+
+	const login: HTMLInputElement | null =
+		document.querySelector("#username-login");
+	const password: HTMLInputElement | null =
+		document.querySelector("#password-login");
+
+	if (login && password) {
+		users.map((u: userI) => {
+			if (u.username == login.value) {
+				if (u.pass == password.value) {
+					renderSets();
+					user = u;
+				} else {
+					console.log("Parol xato");
+				}
+			} else {
+				console.log("Username xato");
+			}
+		});
+	}
+};
+
+const signup = async (event: Event) => {
+	event.preventDefault();
+};
+
+window.onload = () => {};
