@@ -521,7 +521,7 @@ const signup = async (event: Event) => {
 	const username = form.username.value;
 	const pass = form.pass.value;
 
-	await api.post("/users", {
+	user = await api.post("/users", {
 		username,
 		email,
 		pass,

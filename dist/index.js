@@ -376,7 +376,7 @@ System.register("index", ["api"], function (exports_1, context_1) {
                 const email = form.email.value;
                 const username = form.username.value;
                 const pass = form.pass.value;
-                await api_1.api.post("/users", {
+                user = await api_1.api.post("/users", {
                     username,
                     email,
                     pass,
