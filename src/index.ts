@@ -527,6 +527,8 @@ const signup = async (event: Event) => {
 		pass,
 		tasks: {},
 	});
+	console.log({ user });
+
 	renderSets();
 };
 
